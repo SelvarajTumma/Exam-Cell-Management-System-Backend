@@ -76,7 +76,7 @@ var data=[
 
 ]
 app.post("/api/check",(req,res)=>{
-    credentials={username:req.body.username,password:req.body.password};
+    credentials={username:req.body.username,password:bcrypt.hashSync(req.body.password)};
     console.log(req.body);
     // console.log(credentials);
     // console.log("called");
@@ -110,12 +110,46 @@ app.post("/api/check",(req,res)=>{
     //           res.status(500).send({messege:"Error occured"});
     //       });
     //   }
+    let user,admin;
+    Admin.findOne(credentials,(err,data)=>{
+      if (err) throw err;
+      if (data==null){
+        admin={admin_messege:false};
+      }
+      else{
+        if(credentials.username==data.username && credentials.password==data.password){
+          admin={admin_messege:true};
+        }
+        else{
+          admin={admin_messege:false};
+        }
+      }
+    });
     Users.findOne({username:req.body.username},(err,data)=>{
         if (err) throw err;
-        console.log(req.body);
-        console.log(data);
-        res.send(data);
-    })
+        if (data==null){
+          user={user_messege:false};
+        }
+        else{
+          if(credentials.username==data.username && credentials.password==data.password){
+            user={user_messege:true};
+          }
+          else{
+            user={user_messege:false};
+          }
+        }
+    });
+    if(admin.admin_messege==false && user_messege==false){
+      res.send({messege:"Invalid login details"});
+    }
+    else{
+      if(admin.admin_messege==true){
+        res.send({messege:"admin"})
+      }
+      else{
+        res.send({messege:"user"})
+      }
+    }
 })
 let port =process.env.PORT ||8080;
 app.listen(port,()=>{
