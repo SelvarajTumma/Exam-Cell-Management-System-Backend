@@ -1,7 +1,6 @@
 const mongoose=require("mongoose");
-mongoose.Promise=global.Promise;
 const db={};
 db.mongoose=mongoose;
 db.users=require("./user.js");
-db.admins=require("../models/admin");
+db.admins=require("./admin.js");
 module.exports=db;

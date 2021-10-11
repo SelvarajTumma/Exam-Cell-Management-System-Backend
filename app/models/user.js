@@ -1,10 +1,11 @@
-let mongoose=require("mongoose");
+mongoose=require("mongoose");
 var Schema=new mongoose.Schema(
     {
         "username": {
           "type": "String",
-          required:true,
+          required:true
           //index:{unique:true}
+          //ref:rno
         },
         "password": {
           "type": "String",

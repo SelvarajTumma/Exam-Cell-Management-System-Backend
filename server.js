@@ -6,7 +6,6 @@ let cors=require("cors");
 //     "origin":"http:localhost:4200"
 // };
 //let mongo=require("mongodb").MongoClient;
-let bcrypt=require("bcryptjs");
 app.options('*',cors());
 //app.use(cors(corsOptions));
 app.use(bodyparser.json());
@@ -20,7 +19,7 @@ app.use((req,res,next)=>{
     );
     next();
 });
-let url=require("./app/config/db_congig");
+let url=require("./app/config/db_config");
 let mongoose=require("mongoose");
 mongoose.connect(url.url,{useNewUrlParser: true, useUnifiedTopology: true});
 let db=mongoose.connection;
@@ -29,80 +28,39 @@ db.once("open",()=>{
     console.log("connected to the database");
 });
 let model=require("./app/models");
+const admin = require("./app/models/admin");
+const user = require("./app/models/user");
+const { users } = require("./app/models");
 let Users=model.users;
 let Admin=model.admins;
 app.get("/",(req,res)=>{
     res.send({messege:"working"});
 });
-var data=[
-  {
-    username:"Admin1",
-    password:"Admin1"
-},
-{
-    username:"Admin2",
-    password:"Admin2"
-},
-{
-    username:"Admin3",
-    password:"Admin3"
-},
-{
-    username:"Admin4",
-    password:"Admin4"
-},
-{
-    username:"Admin5",
-    password:"Admin5"
-},{
-    username:"Admin6",
-    password:"Admin6"
-}, {
-    username:"Admin7",
-    password:"Admin7"
-},
-{
-    username:"Admin8",
-    password:"Admin8"
-},
-{
-    username:"Admin9",
-    password:"Admin9"
-},
-{
-    username:"Admin10",
-    password:"Admin10"
-}
 
-]
-app.post("/api/check",(req,res)=>{
-    credentials={username:req.body.username,password:bcrypt.hashSync(req.body.password)};
-    console.log(req.body);
-    // console.log(credentials);
-    // console.log("called");
-    // db.collection("users",(err,path)=>{
-    //     if(err){
-    //         console.log(err);
-    //     }
-    //     path.find(req.body).toArray((err,res)=>{
-    //         if (err){
-    //             console.log(err);
-    //         }
-    //         console.log(res);
-    //     });
-    // })
-    // console.log(puser);
+// for (let i=0;i<data.length;i++){
+//         const newUser=new Users({username:data[i].username,password:data[i].password});
+//         newUser.save(newUser).then(data=>{
+//             console.log(data);
+//         })
+//         .catch(err=>{
+//             res.status(500).send({messege:"Error occured"});
+//         });
+//     }
+   
+
+app.post("/api/check",async (req,res)=>{
+    credentials={username:req.body.username,password:req.body.password};
+  //   for (let i=0;i<data.length;i++){
+  //     const newUser=new Users({username:data[i].username,password:data[i].password});
+  //     newUser.save(newUser).then(data=>{
+  //         console.log(data);
+  //     })
+  //     .catch(err=>{
+  //         res.status(500).send({messege:"Error occured"});
+  //     });
+  // }
     // for (let i=0;i<data.length;i++){
-    //     const newUser=new Users({username:data[i].username,password:bcrypt.hashSync(data[i].password)});
-    //     newUser.save(newUser).then(data=>{
-    //         console.log(data);
-    //     })
-    //     .catch(err=>{
-    //         res.status(500).send({messege:"Error occured"});
-    //     });
-    // }
-    // for (let i=0;i<data.length;i++){
-    //       const newAdmin=new Admin({username:data[i].username,password:bcrypt.hashSync(data[i].password)});
+    //       const newAdmin=new Admin({username:data[i].username,password:data[i].password});
     //       newAdmin.save(newAdmin).then(data=>{
     //           console.log(data);
     //       })
@@ -110,47 +68,89 @@ app.post("/api/check",(req,res)=>{
     //           res.status(500).send({messege:"Error occured"});
     //       });
     //   }
-    let user,admin;
-    Admin.findOne(credentials,(err,data)=>{
-      if (err) throw err;
-      if (data==null){
-        admin={admin_messege:false};
+
+
+    // var user=false;
+    // var admin=false;
+    // Admin.findOne(credentials,(err,data)=>{
+    //   if (err) throw err;
+    //   console.log(data);
+    //   if (data==null){
+    //     admin=false;
+    //   }
+    //   else{
+    //     if(credentials.username==data.username && credentials.password==data.password){
+    //       admin=true;
+    //       console.log("admin",credentials.username==data.username,"   ",credentials.password==data.password);
+
+    //     }
+    //     else{
+    //       admin=false;
+    //     }
+    //   }
+    // }); 
+    // Users.findOne({username:req.body.username},(err,data)=>{
+    //     if (err) throw err;
+    //     console.log(data);
+    //     if (data==null){
+    //       user=false;
+    //     }
+    //     else{
+    //       if(credentials.username==data.username && credentials.password==data.password)
+    //       {
+    //         user=true;
+    //         console.log("user",credentials.username==data.username,"   ",credentials.password==data.password);
+    //         console.log(user);
+    //       }
+    //       else{
+    //         user=false;
+    //       }
+    //     }
+    // });
+    // if(admin==true || user==true){
+    //   console.log("called");
+    //   if(admin==true){
+    //     res.send({messege:"admin"});
+    //     console.log({messege:"admin"});
+    //   }
+    //   else{
+    //     console.log("called");
+    //     res.send({messege:"user"});
+    //     console.log({messege:"user"});
+    //   }
+    // }
+    // else{
+    //   res.send({messege:"Invalid login details"});
+    //   console.log({messege:"Invalid login details"});
+    // }
+    // console.log("end ",user,admin);
+    admin.findOne({username:credentials.username}, async (req,data)=>{
+      if(data==null){
+        users.findOne({username:credentials.username},async (req,data)=>{
+          if(data==null){
+            res.send({messege:"Invalid"});
+          }
+          else{
+            if(credentials.username==data.username && credentials.password==data.password){
+              res.send({messege:"User"});
+            }
+            else{
+              res.send({messege:"Invalid"})
+            }
+          }
+        });
       }
       else{
         if(credentials.username==data.username && credentials.password==data.password){
-          admin={admin_messege:true};
+          res.send({messege:"Admin"});
         }
         else{
-          admin={admin_messege:false};
+          res.send({messege:"Invalid"});
         }
       }
-    });
-    Users.findOne({username:req.body.username},(err,data)=>{
-        if (err) throw err;
-        if (data==null){
-          user={user_messege:false};
-        }
-        else{
-          if(credentials.username==data.username && credentials.password==data.password){
-            user={user_messege:true};
-          }
-          else{
-            user={user_messege:false};
-          }
-        }
-    });
-    if(admin.admin_messege==false && user_messege==false){
-      res.send({messege:"Invalid login details"});
-    }
-    else{
-      if(admin.admin_messege==true){
-        res.send({messege:"admin"})
-      }
-      else{
-        res.send({messege:"user"})
-      }
-    }
-})
+    })
+    
+});
 let port =process.env.PORT ||8080;
 app.listen(port,()=>{
     console.log(`server is running in the port ${port}`);

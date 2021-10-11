@@ -11,7 +11,7 @@ var Schema=new mongoose.Schema(
           required:true
         }
       },
-      {collection:"users"}
+      {collection:"Admin"}
 );
 let admin=mongoose.model("admin",Schema,"Admin");
 module.exports=admin;
