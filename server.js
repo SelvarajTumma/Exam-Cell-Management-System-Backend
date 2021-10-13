@@ -2,6 +2,8 @@ let express=require("express");
 let app=express();
 let bodyparser=require("body-parser");
 let cors=require("cors");
+let jwt=require("jsonwebtoken");
+let authConfig=require("./app/config/auth_config");
 // let corsOptions={
 //     "origin":"http:localhost:4200"
 // };
@@ -132,17 +134,19 @@ app.post("/api/check",async (req,res)=>{
           }
           else{
             if(credentials.username==data.username && credentials.password==data.password){
-              res.send({messege:"User"});
+              let token=jwt.sign({username:data.username},authConfig.code,{expiresIn:"3d"});
+              res.send({messege:"User",value:token});
             }
             else{
-              res.send({messege:"Invalid"})
+              res.send({messege:"Invalid"});
             }
           }
         });
       }
       else{
         if(credentials.username==data.username && credentials.password==data.password){
-          res.send({messege:"Admin"});
+          let token=jwt.sign({username:data.username},authConfig.code,{expiresIn:"3d"});
+          res.send({messege:"Admin",value:token});
         }
         else{
           res.send({messege:"Invalid"});
