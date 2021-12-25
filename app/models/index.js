@@ -4,4 +4,6 @@ db.mongoose=mongoose;
 db.users=require("./user.js");
 db.admins=require("./admin.js");
 db.studData=require("./student-data");
+db.subjects=require("./subjects");
+db.timetable=require("./timetable");
 module.exports=db;
