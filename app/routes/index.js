@@ -94,6 +94,7 @@ router.post("/check",async (req,res)=>{
             if(credentials.username==data.username && credentials.password==data.password){
               //let token=jwt.sign({username:data.username},authConfig.code,{expiresIn:"3d"});
               res.send({messege:"User",username:data.username});
+              console.log("Send");
             }
             else{
               res.send({messege:"Invalid"});
@@ -151,9 +152,16 @@ router.post("/getSubjects",async(req,res)=>{
 });
 
 router.post("/set_timetable",async(req,res)=>{
-  let subjects=JSON.parse(req.body.subjects);
-  console.log(subjects);
-  const timetable=new Timetable({year:req.body.year,month:req.body.month,subjects:JSON.parse(req.body.subjects)});
+  console.log("called");
+  console.log(req.body);
+  console.log(req.body.subjects);
+  const timetable=new Timetable(
+    {Regulation:req.body.Regulation,
+      Dept:req.body.Dept,
+      Semester:req.body.Semester,
+      year:req.body.year,
+      month:req.body.month,
+      subjects:req.body.subjects});
   timetable.save(timetable).then(data=>{
     console.log(data);
     res.send({messege:"Sccessful"});
@@ -162,6 +170,44 @@ router.post("/set_timetable",async(req,res)=>{
     console.log(err);
     res.send({"messege":"unsccessful"});
   });
+})
+
+router.post("/get_timetable", async (req,res)=>{
+  console.log("called");
+  console.log(req.body.fetch_timetable);
+  const find_Timetable={Regulation:req.body.fetch_timetable.Regulation,Dept:req.body.fetch_timetable.Dept,Semester:req.body.fetch_timetable.Semester,year:req.body.fetch_timetable.year,month:req.body.fetch_timetable.month};
+  // Timetable.find(query,async(data,err)=>{
+  //   if(err) throw err;
+  //   console.log(data);
+  // })
+  //Fetching the req data
+//   Timetable.find(query,(timetable,err)=>{
+//     // console.log(timetable);
+//     console.log('Data from db : ', timetable);
+//     // res.send(timetable);
+//     res.send(timetable);
+//     if (err) throw err;
+//   })
+  let timetable=await Timetable.find(find_Timetable);
+  res.send(timetable);
+});
+router.post("/update_timetable",async (req,res)=>{
+  console.log("called");
+  console.log(req.body.key);
+  console.log(req.body.updated_timetable);
+  let update= await Timetable.findOneAndUpdate({_id:req.body.key},{$set:{$pull:{subjects:req.body.subjects},month:req.body.updated_timetable.month,year:req.body.updated_timetable.year,}},{ new:true,returnDocument:"after"});
+  console.log(update);
+  console.log(update.subjects)
+  res.send({messege:"Success"});
+})
+
+router.get("delete_timetable/:id",async(req,res)=>{
+  console.log("called");
+  console.log(req.query.params.id);
+  Timetable.remove({_id:req.query.params.id},(err)=>{
+    if(err) throw err;
+    res.send({messege:"Success"});
+  })
 })
 router.use("/api",router);
 module.exports = router;

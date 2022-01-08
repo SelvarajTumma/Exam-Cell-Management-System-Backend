@@ -1,6 +1,15 @@
 var mongoose=require("mongoose");
 var timetable_schema=mongoose.Schema(
     {
+      "Dept": {
+        "type": "String"
+      },
+      "Regulation": {
+        "type": "String"
+      },
+      "Semester": {
+        "type": "String"
+      },
         "year": {
           "type": "String"
         },
@@ -21,11 +30,10 @@ var timetable_schema=mongoose.Schema(
                   "type": "String"
                 },
                 "date": {
-                  "type": "Date",
-                  "min":"01-01-1998",
-                  "max":"31-12-9999"
-                }
-              }   
+                  "type": "String"
+                },
+                _id : false 
+              } 
             ]
           }    
         }
