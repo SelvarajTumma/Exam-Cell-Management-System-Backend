@@ -19,23 +19,22 @@ var timetable_schema=mongoose.Schema(
           ]
         },
         "subjects": {
-          "subjectsArray": {
-            "type":
-            [
-              {
-                "sub_code": {
-                  "type": "String"
-                },
-                "sub_name": {
-                  "type": "String"
-                },
-                "date": {
-                  "type": "String"
-                },
-                _id : false 
-              } 
-            ]
-          }    
+          "type":
+          [
+            {
+              "sub_code": {
+                "type": "String"
+              },
+              "sub_name": {
+                "type": "String"
+              },
+              "date": {
+                "type": "String"
+              },
+              _id : false 
+            } 
+          ]
+          
         }
       }
 

@@ -18,5 +18,5 @@ var Schema=new mongoose.Schema(
     },
     {collection:"Subjects"}
 );
-let admin=mongoose.model("subject",Schema,"Subjects");
-module.exports=admin;
+let subjects=mongoose.model("examFees",Schema,"Subjects");
+module.exports=subjects;

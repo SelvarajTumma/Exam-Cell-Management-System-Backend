@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const controller=require('../controllers/controller.js');
+const { fees } = require('../models');
 router.get("/hello",controller.hello);
 let model=require("../models");
 let Users=model.users;
@@ -7,6 +8,9 @@ let Admin=model.admins;
 let studdata=model.studData;
 let subjects=model.subjects;
 let Timetable=model.timetable;
+let Fees=model.fees;
+let EXAMFEES=model.examfees;
+let college=model.collegedatils;
 router.post("/check",async (req,res)=>{
     credentials={username:req.body.username,password:req.body.password};
   //   for (let i=0;i<data.length;i++){
@@ -188,26 +192,174 @@ router.post("/get_timetable", async (req,res)=>{
 //     res.send(timetable);
 //     if (err) throw err;
 //   })
-  let timetable=await Timetable.find(find_Timetable);
-  res.send(timetable);
+  await Timetable.findOne(find_Timetable).then(
+    (timetable)=>{
+      console.log(timetable);
+      res.send(timetable);
+    }
+  )
+  .catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
 });
 router.post("/update_timetable",async (req,res)=>{
   console.log("called");
-  console.log(req.body.key);
-  console.log(req.body.updated_timetable);
-  let update= await Timetable.findOneAndUpdate({_id:req.body.key},{$set:{$pull:{subjects:req.body.subjects},month:req.body.updated_timetable.month,year:req.body.updated_timetable.year,}},{ new:true,returnDocument:"after"});
-  console.log(update);
-  console.log(update.subjects)
-  res.send({messege:"Success"});
+  console.log(req.body)
+  console.log(req.body.updated_timetable.subjects)
+  await Timetable.findByIdAndUpdate({_id:req.body.key},{subjects:req.body.updated_timetable.subjects,month:req.body.updated_timetable.month,year:req.body.updated_timetable.year}).then(
+    (updated)=>{
+      console.log(updated);
+      res.send({message:"updated"});
+    }
+  ).catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
 })
 
-router.get("delete_timetable/:id",async(req,res)=>{
-  console.log("called");
-  console.log(req.query.params.id);
-  Timetable.remove({_id:req.query.params.id},(err)=>{
-    if(err) throw err;
-    res.send({messege:"Success"});
+router.get("/Delete/:id",(req,res)=>{
+  console.log(req.params.id);
+  Timetable.remove({_id:req.params.id}).then(
+    (deleted)=>{
+      console.log(deleted)
+      res.send({message:"deleted"});
+    }
+  )
+  .catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
+});
+
+var data=[
+  {
+    number_Of_Subjects:1,
+    fees:400   
+},
+{
+    number_Of_Subjects:2,
+    fees:600   
+},
+{
+    number_Of_Subjects:3,
+    fees:800   
+},
+{
+    number_Of_Subjects:4,
+    fees:800   
+},
+{
+    number_Of_Subjects:5,
+    fees:1300   
+},
+{
+    number_Of_Subjects:6,
+    fees:1300   
+},
+]
+router.post("/fees",(req,res)=>{
+  for(let i=0;i<data.length;i++){
+    let fee=new Fees({
+      "number_Of_Subjects":data[i].number_Of_Subjects,
+        "fees":data[i].fees
+    } 
+    )
+    fee.save(fee).then(
+      (sccess)=>{
+        console.log("saved");
+        res.send("success");
+      }
+    ).catch(
+      (err)=>{
+        console.log(err);
+      }
+    )
+  }
+})
+router.get("/fees/:number",async (req,res)=>{
+  console.log(req.params.number);
+  console.log(typeof(req.params.number))
+  await fees.findOne({number_Of_Subjects:parseInt(req.params.number)}).then(
+    (data)=>{
+      res.send(data.fees+"");
+    }
+  )
+  .catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
+})
+
+router.post("/ExamFees",(req,res)=>{
+  console.log(req.body);
+  let examfees=new EXAMFEES({
+  username:req.body.username,
+  Regulation:req.body.Regulation,
+  semester:req.body.Semester,
+  Department:req.body.Department,
+  Fees:req.body.Fees,
+  subjects:req.body.subjects,
   })
+  examfees.save().then(
+    (saved)=>{
+      res.send({message:"Paid"});
+    }
+  ).catch(
+    (error)=>{
+      res.send({message:"error"});
+      console.log(error)
+    }
+  )
+})
+router.get("/generateHallticket/:username/:semester",(req,res)=>{
+  console.log(req.params.username);
+  console.log(req.params.semester);
+})
+router.post("/paidList",(req,res)=>{
+  console.log(req.body);
+  EXAMFEES.findOne({username:req.body.username,semester:req.body.semester}).then(
+    (list)=>{
+      console.log(list);
+      res.send(list);
+    }
+  ).catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
+})
+router.get("/paidList/:username",(req,res)=>{
+  console.log(req.params.username);
+  EXAMFEES.find({username:req.params.username}).then(
+    (list)=>{
+      console.log(list);
+      res.send(list);
+    }
+  ).
+  catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
+})
+
+router.get("/collegeDetails",(req,res)=>{
+  college.find({}).then(
+    (clg)=>{
+      console.log(clg);
+      res.send(college);
+    }
+  )
+  .catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
 })
 router.use("/api",router);
 module.exports = router;

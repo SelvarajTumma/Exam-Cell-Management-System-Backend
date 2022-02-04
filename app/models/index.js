@@ -6,4 +6,7 @@ db.admins=require("./admin.js");
 db.studData=require("./student-data");
 db.subjects=require("./subjects");
 db.timetable=require("./timetable");
+db.fees=require("./fees");
+db.examfees=require("./Exam_Fees.js");
+db.collegedatils=require("./college");
 module.exports=db;
