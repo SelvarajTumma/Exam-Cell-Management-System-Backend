@@ -9,4 +9,5 @@ db.timetable=require("./timetable");
 db.fees=require("./fees");
 db.examfees=require("./Exam_Fees.js");
 db.collegedatils=require("./college");
+db.marks=require("./Marks");
 module.exports=db;

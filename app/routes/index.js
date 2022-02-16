@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const controller=require('../controllers/controller.js');
-const { fees } = require('../models');
+const { fees, marks } = require('../models');
 router.get("/hello",controller.hello);
 let model=require("../models");
 let Users=model.users;
@@ -11,6 +11,7 @@ let Timetable=model.timetable;
 let Fees=model.fees;
 let EXAMFEES=model.examfees;
 let college=model.collegedatils;
+let Marks=model.marks;
 router.post("/check",async (req,res)=>{
     credentials={username:req.body.username,password:req.body.password};
   //   for (let i=0;i<data.length;i++){
@@ -235,32 +236,7 @@ router.get("/Delete/:id",(req,res)=>{
   )
 });
 
-var data=[
-  {
-    number_Of_Subjects:1,
-    fees:400   
-},
-{
-    number_Of_Subjects:2,
-    fees:600   
-},
-{
-    number_Of_Subjects:3,
-    fees:800   
-},
-{
-    number_Of_Subjects:4,
-    fees:800   
-},
-{
-    number_Of_Subjects:5,
-    fees:1300   
-},
-{
-    number_Of_Subjects:6,
-    fees:1300   
-},
-]
+
 router.post("/fees",(req,res)=>{
   for(let i=0;i<data.length;i++){
     let fee=new Fees({
@@ -347,12 +323,96 @@ router.get("/paidList/:username",(req,res)=>{
     }
   )
 })
-
+router.post("/addCollegeDetails",(req,res)=>{
+  console.log(req.body);
+  let College =new college({
+    logo:"https://upload.wikimedia.org/wikipedia/commons/2/21/Nec.png.jpg",
+    college_name:"Narasaraopeta Engineering College",
+    college_code:47,
+    address:"Kotappakonda Road, Yellamanda(P.O),NARASARAOPET-522601, Guntur ,AP",
+    phone:"08647-239903 & 239902(Fax)",
+    website:"www.nrtec.ac.in",
+    email:"nrtec_princpal@yahoo.com"
+  })
+  College.save(College).then(
+    (data)=>{
+      console.log(data);
+      res.send("saved")
+    }
+  ).catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
+})
 router.get("/collegeDetails",(req,res)=>{
-  college.find({}).then(
+  college.findOne({college_code:47}).then(
     (clg)=>{
       console.log(clg);
-      res.send(college);
+      res.send(clg);
+    }
+  )
+  .catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
+});
+
+router.post("/Marks",(req,res)=>{
+  console.log(req.body);
+  let Marks=new marks(
+    {
+      "RollNo":req.body.RollNo,
+      "semester":req.body.semester,
+      "Regulation": req.body.Regulation,
+      "Dept": req.body.Dept,
+      "subjects": req.body.subjects
+    }
+  )
+  Marks.save(Marks).then(
+    (_data)=>{
+      res.send({messsege:"saved"});
+    }
+  )
+  .catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
+})
+// router.post("/EditMarks",(req,res)=>{
+//   console.log(req.body);
+//   marks.findByIdAndUpdate({_id:req.body.id},{sbjects:req.body.subjects}).then(
+//     (data)=>{
+//       console.log(data);
+//       res.send({message:"updated"});
+//     }
+//   )
+//   .catch(
+//     (err)=>{
+//       console.log(err);
+//     }
+//   )
+// })
+router.delete("/DeleteRecord/:id",(req,res)=>{
+  marks.deleteOne({_id:req.params.id}).then(
+    (result)=>{
+      res.send({message:"deleted"})
+    }
+  )
+  .catch(
+    (err)=>{
+      console.log(err);
+    }
+  )
+})
+router.post("/getMarks",(req,res)=>{
+  console.log(req.body);
+  marks.findOne({RollNo:req.body.RollNo,semester:req.body.semester}).then(
+    (data)=>{
+      console.log(data);
+      res.send(data);
     }
   )
   .catch(
