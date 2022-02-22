@@ -223,7 +223,7 @@ router.post("/update_timetable",async (req,res)=>{
 
 router.get("/Delete/:id",(req,res)=>{
   console.log(req.params.id);
-  Timetable.remove({_id:req.params.id}).then(
+  Timetable.deleteOne({_id:req.params.id}).then(
     (deleted)=>{
       console.log(deleted)
       res.send({message:"deleted"});

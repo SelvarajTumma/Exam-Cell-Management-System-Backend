@@ -4,12 +4,7 @@ let bodyparser=require("body-parser");
 let cors=require("cors");
 let jwt=require("jsonwebtoken");
 let authConfig=require("./app/config/auth_config");
-// let corsOptions={
-//     "origin":"http:localhost:4200"
-// };
-//let mongo=require("mongodb").MongoClient;
 app.options('*',cors());
-//app.use(cors(corsOptions));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:true}));
 app.use((req,res,next)=>{

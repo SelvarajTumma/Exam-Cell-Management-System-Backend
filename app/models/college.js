@@ -1,22 +1,27 @@
 let mongoose=require("mongoose");
 var Schema=new mongoose.Schema(
     {
-      
-        "username": {
+        "logo": {
           "type": "String"
         },
-        "Regulation": {
+        "college_name": {
           "type": "String"
         },
-        "Dept": {
+        "college_code": {
+          "type": "Number"
+        },
+        "address": {
           "type": "String"
         },
-        "subjects": {
-          "type": [
-            "Mixed"
-          ]
-        }
-      
+        "phone": {
+          "type": "String"
+        },
+        "website": {
+          "type": "String"
+        },
+        "email": {
+          "type": "String"
+        } 
       },
     {collection:"CollegeDetails"}
 );
